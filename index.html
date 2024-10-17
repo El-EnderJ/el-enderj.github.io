@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el país o su capital en África</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('image.png'); /* Imagen del mapa de África */
+            background-size: cover;
+            background-position: center;
+            color: #333;
+        }
+        #game-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+            position: relative; /* Permite colocar el mapa de fondo */
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 15px;
+            font-size: 16px;
+        }
+        input {
+            padding: 15px;
+            font-size: 18px;
+            width: 400px; /* Aumentado para hacer el recuadro de texto más grande */
+            margin: 10px 0;
+        }
+        #footer {
+            margin-top: 20px;
+            font-size: 14px; /* Tamaño del texto del footer */
+            color: #666; /* Color gris para diferenciarlo del resto */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>Adivina el país y su capital en África</h1>
+        <p id="question">Escribe la capital o el país:</p>
+
+        <input type="text" id="answer-input" placeholder="Escribe tu respuesta"><br>
+
+        <button onclick="checkAnswer()">Comprobar respuesta</button>
+
+        <p id="result" class="result hidden"></p>
+        <div id="footer">Hecho por Juanra</div> <!-- Mensaje añadido -->
+    </div>
+
+    <script>
+        // Lista de países con sus capitales
+        const countries = [
+            { country: "Marruecos", capital: "Rabat" },
+            { country: "Argelia", capital: "Argel" },
+            { country: "Túnez", capital: "Túnez" },
+            { country: "Libia", capital: "Trípoli" },
+            { country: "Egipto", capital: "El Cairo" },
+            { country: "Níger", capital: "Niamey" },
+            { country: "Sudán", capital: "Jartum" },
+            { country: "Etiopía", capital: "Adis Abeba" },
+            { country: "Somalia", capital: "Mogadiscio" },
+            { country: "República Democrática del Congo", capital: "Kinshasa" },
+            { country: "Kenia", capital: "Nairobi" },
+            { country: "Angola", capital: "Luanda" },
+            { country: "Mozambique", capital: "Maputo" },
+            { country: "Madagascar", capital: "Antananarivo" },
+            { country: "República Sudafricana", capital: "Ciudad del Cabo" },
+            { country: "Chad", capital: "Yamena" },
+            { country: "Namibia", capital: "Windhoek" },
+            { country: "Botsuana", capital: "Gaborone" },
+            { country: "Nigeria", capital: "Abuya" },
+            { country: "Mauritania", capital: "Nuakchot" }
+        ];
+
+        let currentQuestion; // Será un objeto que contendrá el país y la capital
+        let questionType; // Puede ser "country" o "capital"
+
+        // Selecciona un país o una capital aleatoria
+        function getRandomCountryOrCapital() {
+            const selectedCountry = countries[Math.floor(Math.random() * countries.length)];
+
+            // Decide si preguntar por el país o la capital (50% de probabilidad)
+            if (Math.random() > 0.5) {
+                // Pregunta por el país
+                questionType = "country";
+                document.getElementById("question").textContent = "¿Cuál es la capital de " + selectedCountry.country + "?";
+            } else {
+                // Pregunta por la capital
+                questionType = "capital";
+                document.getElementById("question").textContent = "¿De qué país es la capital " + selectedCountry.capital + "?";
+            }
+
+            currentQuestion = selectedCountry;
+        }
+
+        // Verifica la respuesta
+        function checkAnswer() {
+            const inputAnswer = document.getElementById("answer-input").value.trim().toLowerCase();
+            const result = document.getElementById("result");
+
+            // Normalizamos las respuestas
+            const normalizedCountry = currentQuestion.country.toLowerCase();
+            const normalizedCapital = currentQuestion.capital.toLowerCase();
+
+            // Comprobamos si la respuesta es correcta dependiendo del tipo de pregunta
+            if (questionType === "country" && inputAnswer === normalizedCapital) {
+                result.textContent = "¡Correcto! " + currentQuestion.capital + " es la capital de " + currentQuestion.country + ".";
+                result.style.color = "green";
+                setTimeout(() => {
+                    result.classList.add("hidden");
+                    getRandomCountryOrCapital(); // Carga una nueva pregunta
+                    document.getElementById("answer-input").value = ""; // Limpia el campo de entrada
+                }, 2000); // Espera 2 segundos antes de cambiar de pregunta
+            } else if (questionType === "capital" && inputAnswer === normalizedCountry) {
+                result.textContent = "¡Correcto! " + currentQuestion.capital + " es la capital de " + currentQuestion.country + ".";
+                result.style.color = "green";
+                setTimeout(() => {
+                    result.classList.add("hidden");
+                    getRandomCountryOrCapital(); // Carga una nueva pregunta
+                    document.getElementById("answer-input").value = ""; // Limpia el campo de entrada
+                }, 2000);
+            } else {
+                result.textContent = "Incorrecto. Inténtalo de nuevo.";
+                result.style.color = "red";
+            }
+
+            result.classList.remove("hidden");
+        }
+
+        // Inicia el juego cargando una pregunta aleatoria
+        getRandomCountryOrCapital();
+    </script>
+</body>
+</html>
