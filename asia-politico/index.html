@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina el país o su capital en Asia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('image.png'); /* Imagen del mapa de Asia */
+            background-size: cover;
+            background-position: center;
+            color: #333;
+        }
+        #game-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            text-align: center;
+            margin-top: 80px; /* Aumentado para mover el contenedor más abajo */
+            position: relative; /* Permite colocar el mapa de fondo */
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 15px;
+            font-size: 16px;
+        }
+        input {
+            padding: 15px;
+            font-size: 18px;
+            width: 400px; /* Aumentado para hacer el recuadro de texto más grande */
+            margin: 10px 0;
+        }
+        #footer {
+            margin-top: 20px;
+            font-size: 14px; /* Tamaño del texto del footer */
+            color: #666; /* Color gris para diferenciarlo del resto */
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="score">Respuestas Correctas: 0</div> <!-- Contador de respuestas correctas -->
+    
+    <div id="game-container">
+        <h1>Adivina el país y su capital en Asia</h1>
+        <p id="question">Escribe la capital o el país:</p>
+
+        <input type="text" id="answer-input" placeholder="Escribe tu respuesta"><br>
+
+        <button onclick="checkAnswer()">Comprobar respuesta</button>
+
+        <p id="result" class="result hidden"></p>
+        <div id="footer">Hecho por Juanra</div> <!-- Mensaje añadido -->
+    </div>
+
+    <script>
+        // Lista de países con sus capitales en Asia
+        const countries = [
+            { country: "Arabia Saudí", capital: "Riad" },
+            { country: "Siria", capital: "Damasco" },
+            { country: "Irak", capital: "Bagdad" },
+            { country: "Irán", capital: "Teherán" },
+            { country: "Kazajistán", capital: "Astana" },
+            { country: "Afganistán", capital: "Kabul" },
+            { country: "Pakistán", capital: "Islamabad" },
+            { country: "India", capital: "Nueva Delhi" },
+            { country: "China", capital: "Pekín" },
+            { country: "Mongolia", capital: "Ulan Bator" },
+            { country: "Rusia", capital: "Moscú" },
+            { country: "Corea del Norte", capital: "Piongyang" },
+            { country: "Corea del Sur", capital: "Seúl" },
+            { country: "Japón", capital: "Tokio" },
+            { country: "Indonesia", capital: "Yakarta" },
+            { country: "Turquía", capital: "Ankara" },
+            { country: "Tailandia", capital: "Bangkok" },
+        ];
+
+        let usedQuestions = new Set(); // Conjunto para llevar el registro de preguntas usadas
+        let currentQuestion; // Será un objeto que contendrá el país y la capital
+        let questionType; // Puede ser "country" o "capital"
+        let correctAnswers = 0; // Contador de respuestas correctas
+
+        // Selecciona un país o una capital aleatoria
+        function getRandomCountryOrCapital() {
+            if (usedQuestions.size === countries.length) {
+                // Si todas las preguntas han sido utilizadas, reinicia el conjunto
+                usedQuestions.clear();
+            }
+
+            let selectedCountry;
+            do {
+                selectedCountry = countries[Math.floor(Math.random() * countries.length)];
+            } while (usedQuestions.has(selectedCountry)); // Asegúrate de no repetir la pregunta
+
+            // Agrega la pregunta seleccionada al conjunto
+            usedQuestions.add(selectedCountry);
+
+            // Decide si preguntar por el país o la capital (50% de probabilidad)
+            if (Math.random() > 0.5) {
+                // Pregunta por el país
+                questionType = "country";
+                document.getElementById("question").textContent = "¿Cuál es la capital de " + selectedCountry.country + "?";
+            } else {
+                // Pregunta por la capital
+                questionType = "capital";
+                document.getElementById("question").textContent = "¿De qué país es la capital " + selectedCountry.capital + "?";
+            }
+
+            currentQuestion = selectedCountry;
+        }
+
+        // Verifica la respuesta
+        function checkAnswer() {
+            const inputAnswer = document.getElementById("answer-input").value.trim().toLowerCase();
+            const result = document.getElementById("result");
+
+            // Normalizamos las respuestas
+            const normalizedCountry = currentQuestion.country.toLowerCase();
+            const normalizedCapital = currentQuestion.capital.toLowerCase();
+
+            // Comprobamos si la respuesta es correcta dependiendo del tipo de pregunta
+            if (questionType === "country" && inputAnswer === normalizedCapital) {
+                correctAnswers++; // Incrementa el contador de respuestas correctas
+                document.getElementById("score").textContent = "Respuestas Correctas: " + correctAnswers; // Actualiza el contador
+                result.textContent = "¡Correcto! " + currentQuestion.capital + " es la capital de " + currentQuestion.country + ".";
+                result.style.color = "green";
+                setTimeout(() => {
+                    result.classList.add("hidden");
+                    getRandomCountryOrCapital(); // Carga una nueva pregunta
+                    document.getElementById("answer-input").value = ""; // Limpia el campo de entrada
+                }, 2000); // Espera 2 segundos antes de cambiar de pregunta
+            } else if (questionType === "capital" && inputAnswer === normalizedCountry) {
+                correctAnswers++; // Incrementa el contador de respuestas correctas
+                document.getElementById("score").textContent = "Respuestas Correctas: " + correctAnswers; // Actualiza el contador
+                result.textContent = "¡Correcto! " + currentQuestion.capital + " es la capital de " + currentQuestion.country + ".";
+                result.style.color = "green";
+                setTimeout(() => {
+                    result.classList.add("hidden");
+                    getRandomCountryOrCapital(); // Carga una nueva pregunta
+                    document.getElementById("answer-input").value = ""; // Limpia el campo de entrada
+                }, 2000);
+            } else {
+                result.textContent = "Incorrecto. Inténtalo de nuevo.";
+                result.style.color = "red";
+            }
+
+            result.classList.remove("hidden");
+        }
+
+        // Inicia el juego cargando una pregunta aleatoria
+        getRandomCountryOrCapital();
+
+        // Agregar evento para la tecla Enter
+        document.getElementById("answer-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkAnswer(); // Llama a la función de comprobación de respuesta
+            }
+        });
+    </script>
+</body>
+</html>
